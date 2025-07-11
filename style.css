@@ -301,6 +301,7 @@ body{
 
 .hamburger{
     display: none;
+    cursor: pointer;
 }
 
 .hamburgerContainer{
@@ -325,6 +326,11 @@ body{
     align-items: center;
     justify-content: center;
     gap: 8px;
+    cursor: pointer;
+}
+
+.range input{
+    cursor: pointer;
 }
 
 @media (max-width: 1400px) {
@@ -354,6 +360,7 @@ body{
     .hamburger{
         display: block;
         width: 30px;
+        cursor: pointer;
     }
 
     .card{

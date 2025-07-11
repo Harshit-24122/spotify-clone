@@ -51,7 +51,7 @@ async function getSongs(folder){
 
     Array.from(document.querySelector(".songList").getElementsByTagName("li")).forEach(e=>{
         e.addEventListener("click", element => {
-            console.log(e.querySelector(".info").firstElementChild.innerText);
+            // console.log(e.querySelector(".info").firstElementChild.innerText);
             playMusic(e.querySelector(".info").firstElementChild.innerText.trim());
         })
     })
@@ -71,27 +71,36 @@ const playMusic = (track, pause = false) =>{
 async function displayAlbums(){
     let a = await fetch(`http://127.0.0.1:3000/songs/`);
     let response = await a.text();
-    console.log(a);
-    console.log(response);
+    // console.log(a);
+    // console.log(response);
     let div = document.createElement("div");
     div.innerHTML = response;
     let anchors = div.getElementsByTagName("a");
     let cardContainer = document.querySelector(".cardContainer");
-    console.log(cardContainer);
-    console.log(anchors);
-    Array.from(anchors).forEach(async e => {
-        if(e.href.includes("/songs")){
+    // console.log(cardContainer);
+    // console.log(anchors);
+    let array = Array.from(anchors);
+    for(let index=0; index < array.length; index++){
+        const e = array[index];
+        
+    if(e.href.includes("/songs")){
             // console.log(e.href);
             let folder = e.href.split("/").slice(-2)[0];
             let a = await fetch(`http://127.0.0.1:3000/songs/${folder}/info.json`);
             let response = await a.json();
-            console.log(response);
-            cardContainer.innerHTML = cardContainer.innerHTML + `<div data-folder="folder1" class="card">
+            // console.log(response);
+            cardContainer.innerHTML = cardContainer.innerHTML + `<div data-folder="${folder}" class="card">
                         <img src="/songs/${folder}/cover.jpg" alt="">
                         <h2 class="m5">${response.title}</h2>
                         <p>${response.description}</p>
                     </div>`;
         }
+    }
+
+    Array.from(document.getElementsByClassName("card")).forEach(e => {
+        e.addEventListener("click", async item=> {
+            songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`)
+        })
     })
 }
 
@@ -116,7 +125,7 @@ async function main(){
     })
 
     currentSong.addEventListener("timeupdate", () => {
-        console.log(currentSong.currentTime, currentSong.duration);
+        // console.log(currentSong.currentTime, currentSong.duration);
         document.querySelector(".songTime").innerHTML = `${secondsToMinutesSeconds(currentSong.currentTime)} / ${secondsToMinutesSeconds(currentSong.duration)}`;
         document.querySelector(".circle").style.left = `${(currentSong.currentTime / currentSong.duration) * 100}%`;
     })
@@ -165,10 +174,17 @@ async function main(){
         }
     })
 
-    Array.from(document.getElementsByClassName("card")).forEach(e => {
-        e.addEventListener("click", async item=> {
-            songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`)
-        })
+    document.querySelector(".volume>img").addEventListener("click", e => {
+        if(e.target.src.includes("volume.svg")){
+            e.target.src = e.target.src.replace("volume.svg", "mute1.svg");
+            currentSong.volume = 0;
+            document.querySelector(".range input").value = 0;
+        }
+        else{
+            e.target.src = e.target.src.replace("mute1.svg", "volume.svg");
+            currentSong.volume = 0.1;
+            document.querySelector(".range input").value = 10;
+        }
     })
 }
 
